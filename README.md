@@ -2,7 +2,7 @@
 
 ## Repositorio de Desarrollo y Experimentación MCP
 
-Este repositorio contiene una colección de servidores MCP (Model Completion Protocol) desarrollados como parte de mi proceso de aprendizaje y experimentación.
+Este repositorio contiene una colección de servidores MCP (Model Context Protocol) desarrollados como parte de mi proceso de aprendizaje y experimentación.
 
 ### Contenido
 

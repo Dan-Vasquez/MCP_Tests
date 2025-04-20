@@ -17,7 +17,22 @@ El repositorio incluye implementaciones que van desde lo básico hasta integraci
 
 Este espacio sirve como laboratorio práctico para probar conceptos, mejorar habilidades de desarrollo y documentar el progreso en la implementación de servidores MCP funcionales.
 
-### Implementacion Basica
+### Proyectos
+
+#### 01-Calculadora
+
+Implementación básica de un servidor MCP que realiza operaciones matemáticas como suma, resta, multiplicación y división.
+
+#### 02-Clima
+
+Servidor MCP que se conecta a la API de OpenWeatherMap para proporcionar:
+- Información del clima actual para cualquier ciudad
+- Pronóstico para los próximos 5 días
+- Recomendaciones basadas en condiciones climáticas
+
+Para usar este servidor, necesitarás obtener una API key gratuita de [OpenWeatherMap](https://openweathermap.org/api).
+
+### Implementación Básica
 
 Una implementación básica de un servidor MCP.
 

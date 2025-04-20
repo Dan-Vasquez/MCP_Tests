@@ -25,8 +25,8 @@ Una implementación básica de un servidor MCP.
 
 1. Iniciar un proyecto nuevo:
    ```bash
-   mkdir <nombre_del_mpc>
-   cd <nombre_del_mpc>
+   mkdir <nombre_del_mcp>
+   cd <nombre_del_mcp>
    pnpm init
    ```
 
@@ -61,7 +61,7 @@ Una implementación básica de un servidor MCP.
    ```bash
    npx -y tsx main.ts
    ```
-7. Ejecutar el inspector para probar el MPC creado:
+7. Ejecutar el inspector para probar el MCP creado:
    ```bash
    npx -y @npx @modelcontextprotocol/inspector npx -y tsx main.ts
    ```

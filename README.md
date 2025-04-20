@@ -17,33 +17,32 @@ El repositorio incluye implementaciones que van desde lo básico hasta integraci
 
 Este espacio sirve como laboratorio práctico para probar conceptos, mejorar habilidades de desarrollo y documentar el progreso en la implementación de servidores MCP funcionales.
 
-### Proyectos
+### Implementacion Basica
 
-#### 01-Calculadora
-
-Una implementación básica de un servidor MCP que ofrece operaciones matemáticas simples.
+Una implementación básica de un servidor MCP.
 
 **Pasos para implementar:**
 
 1. Iniciar un proyecto nuevo:
    ```bash
-   mkdir 01-Calculadora
-   cd 01-Calculadora
+   mkdir <nombre_del_mpc>
+   cd <nombre_del_mpc>
    pnpm init
    ```
 
 2. Instalar las dependencias necesarias:
    ```bash
-   pnpm install @modelcontextprotocol/sdk zod
-   pnpm install -D typescript
+   pnpm install @modelcontextprotocol/sdk
+   pnpm install zod
    ```
 
-3. Crear archivo `tsconfig.json` para configurar TypeScript
+3. Agregar en el package.json `"type": "module"`
 
 4. Crear archivo `main.ts` con la estructura básica:
    ```typescript
    import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
    import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+   import {z} from "zod";
 
    const server = new McpServer({
      name: "example-server",
@@ -56,14 +55,16 @@ Una implementación básica de un servidor MCP que ofrece operaciones matemátic
    await server.connect(transport);
    ```
 
-5. Añadir funciones para las operaciones matemáticas usando Zod para validación
+5. Añadir funciones de recursos, herramietas, prompts, etc. Usando Zod para validación
 
-6. Compilar y ejecutar:
+6. Compilar y ejecutar (Si no ejecuta nada esta funcionando):
    ```bash
-   pnpm build
-   pnpm start
+   npx -y tsx main.ts
    ```
-
+7. Ejecutar el inspector para probar el MPC creado:
+   ```bash
+   npx -y @npx @modelcontextprotocol/inspector npx -y tsx main.ts
+   ```
 ---
 
 *Nota: Los proyectos en este repositorio están en constante evolución y sirven principalmente como material de aprendizaje.*

@@ -82,4 +82,134 @@ Una implementación básica de un servidor MCP.
    ```
 ---
 
+## 03-Laboratorio MCP con n8n 🖇️🤖
+
+En esta fase migramos las pruebas de MCP desde código puro a **n8n**, usando el *Self-Hosted AI Starter-Kit*, con los nodos nativos de MCP y los nodos personalizados **`n8n-nodes-mcp`**. El objetivo es:
+
+1. Levantar un **MCP Server** sobre SSE que exponga cuatro operaciones sobre Google Sheets.  
+2. Crear un **AI Agent** (Gemini 2.5 flash) capaz de descubrir herramientas MCP remotas y ejecutarlas dinámicamente desde una conversación con un LLM.
+
+### 1. Prerrequisitos
+
+| Componente | Versión |
+|------------|---------|
+| Docker + Docker Compose | ≥ 24 |
+| Node | ≥ 18 (para herramientas locales) |
+| n8n *Self-Hosted AI Starter-Kit* | `git clone https://github.com/n8n-io/self-hosted-ai-starter-kit.git` |
+| Paquete extra | `npm i -g supergateway` (solo si vas a usar Claude Desktop) |
+
+### 2. Instalación rápida del Starter-Kit para gpu de Nvidia
+
+```bash
+git clone https://github.com/n8n-io/self-hosted-ai-starter-kit.git
+cd self-hosted-ai-starter-kit
+docker compose --profile gpu-nvidia up
+```
+
+### 3. Importar los flujos de trabajo
+
+En la carpeta `/workflows` de este repo encontrarás dos archivos JSON exportados desde n8n:
+
+| Fichero                        | Descripción                                                      |
+| ------------------------------ | ---------------------------------------------------------------- |
+| `mcp_server_gsheets.json`      | MCP Server con 4 herramientas CRUD sobre Google Sheets           |
+| `ai_agent_gemini_travily_gsheets.json` | Agente Chat (Gemini 2.5 flash) + memoria simple + MCP Client (Travily y Google sheets) |
+
+1. Abre **n8n → Import Workflow → Select File** y activa ambos.
+2. Crea las **credenciales de Google Sheets** con service account preferiblemente y, si usas Travily, establece la credencial **MCP Client (STDIO) account**.
+
+### 4. Flujo *MCP Server Google Sheets*
+
+El objetivo es realizar un CRUD sobre una tabla de clientes que tienen el siguiente esquema: 
+
+|Nombre|Apellido|Edad|Correo|NumeroTrabajo|Observacion|
+
+```
+[MCP Server Trigger]──Tools──► Buscar Todos
+                       ├──────► Buscar
+                       ├──────► Agregar
+                       └──────► Eliminar
+```
+
+* **Endpoint SSE:** `http://0.0.0.0:5678/mcp/<path>/sse`
+* **Herramientas expuestas**
+
+  * `buscar_todos` (read: sheet)
+  * `buscar` (read: sheet)
+  * `agregar` (create: sheet)
+  * `eliminar` (delete: sheet)
+
+Cada nodo Sheets va *detrás* de un nodo **MCP Tool: Custom n8n Workflow** donde se define el schema `input/output` que Claude/Cursor usará para la llamada.
+
+### 5. Flujo *AI Agent Gemini + Travily*
+
+```
+[Chat Trigger] → [AI Agent]
+                 ├─ Chat Model…… Google Gemini Chat Model
+                 ├─ Memory……… Simple Memory
+                 └─ Tools………  • MCP Client  (SSE Endpoint = del paso 4)
+                                • Herramientas de Travily (listTools)
+                                • Ejecutor (executeTool)
+```
+
+#### 5.1 Configuración del MCP Client (Travily)
+
+| Campo          | Valor                                |
+| -------------- | ------------------------------------ |
+| **Credential** | *MCP Client (STDIO) account*         |
+| Command        | `npx`                                |
+| Arguments      | `-y tavily-mcp@0.1.4`                |
+| Environments   | `TAVILY_API_KEY=tvly-<YOUR_API_KEY>` |
+
+Esto inicia `tavily-mcp` en modo **stdio**, que luego n8n enruta al nodo **Ejecutor** (`executeTool`).
+
+#### 5.2 Configuración del MCP Client que ejecuta las herramientas
+
+| Campo          | Valor                                |
+| -------------- | ------------------------------------ |
+| **Credential** | *MCP Client (STDIO) account*         |
+| Tool Description        | Set Automatically                                |
+| Operation      | Execute Tool              |
+| Tool Name   | `{{ $fromAI("tool") }}` |
+|Tool Parameters| Defined automatically by the model|
+
+### 6. Pruebas rápidas
+
+```bash
+# Validar que el servidor SSE responde
+curl -N http://localhost:5678/mcp/<path>/sse
+```
+
+Si no ocurre ningun error y la terminal se queda escuchando todo esta correcto.
+
+### 7. Uso desde Cursor / Claude
+
+* **Cursor** desde las opciones buscar MPC y agregar un nuevo SSE.
+* **Claude Desktop** requiere el puente `supergateway`:
+
+```jsonc
+{
+  "mcpServers": {
+    "n8n-local": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "supergateway",
+        "--sse",
+        "http://127.0.0.1:5678/mcp/<path>/sse"   #127.0.0.1 es la ip que expone docker, tabien se puede utilizar localhost: o la ip Wifi LAN
+      ]
+    }
+  }
+}
+```
+
+Reinicia la aplicación y verás las herramientas dentro de Claude.
+
+### 8. Recursos adicionales
+
+* **n8n-nodes-mcp** → [https://github.com/n8n-io/n8n-nodes-mcp](https://github.com/n8n-io/n8n-nodes-mcp)
+  Colección de nodos “MCP Tool” y “MCP Client” usados en este laboratorio.
+* **Model Context Protocol** → [https://modelcontextprotocol.io](https://modelcontextprotocol.io)
+* **n8n** → [Self-Hosted AI Starter-Kit](https://github.com/n8n-io/self-hosted-ai-starter-kit.git)
+
 *Nota: Los proyectos en este repositorio están en constante evolución y sirven principalmente como material de aprendizaje.*

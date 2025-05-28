@@ -196,7 +196,7 @@ Si no ocurre ningun error y la terminal se queda escuchando todo esta correcto.
         "-y",
         "supergateway",
         "--sse",
-        "http://127.0.0.1:5678/mcp/<path>/sse"   #127.0.0.1 es la ip que expone docker, tabien se puede utilizar localhost: o la ip Wifi LAN
+        "http://127.0.0.1:5678/mcp/<path>/sse"   //127.0.0.1 es la ip que expone docker, tabien se puede utilizar localhost: o la ip Wifi LAN
       ]
     }
   }

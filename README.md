@@ -214,6 +214,6 @@ Reinicia la aplicación y verás las herramientas dentro de Claude.
 
 ## Licencia
 
-Este proyecto está bajo la **Licencia MIT** - ver el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está bajo la **Licencia MIT** - ver el archivo [LICENSE](License) para más detalles.
 
 *Nota: Los proyectos en este repositorio están en constante evolución y sirven principalmente como material de aprendizaje.*
